@@ -1,0 +1,16 @@
+{
+  "name": "travelsite",
+  "version": "1.0.0",
+  "description": "simple travel site with express",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "AmyScripts",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "express-handlebars": "^3.0.0"
+  }
+}
