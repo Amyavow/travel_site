@@ -3,15 +3,19 @@
 <head>
 	<meta charset="utf-8">
 	<title>Travel Site</title>
+	{{{_sections.head}}}
 	{{#if showTests }}
 		<link rel="stylesheet" type="text/css" href="/vendor/mocha.css">
 	
 	{{/if}}
-	<script type="text/javascript" src="//code.jquery.com/jquery-2.0.2.min.js"></script>
+	
 </head>
 <body>
 	<header><img src="/img/logo.jpg" alt="travel site logo" width="200px" height="200px"></header>
 	{{{body}}}
+	<script type="text/javascript" src="//code.jquery.com/jquery-2.0.2.min.js"></script>
+	{{{_sections.jquery}}}
+
 
 
 	{{#if showTests }}
@@ -28,5 +32,7 @@
 		{{/if}}
 		<script>mocha.run();</script>
 	{{/if}}
+
+	<footer>&copy; {{copyRightYear}} AmyScripts Travels</footer>
 </body>
 </html>
