@@ -1,6 +1,8 @@
 var express = require("express"),
 	path = require("path"),
 	fortune = require("./lib/fortune.js"),
+	weatherData = require("./lib/weatherData.js"),
+	credentials = require("./credentials.js"),
 	handlebars = require("express-handlebars").create({
 		defaultLayout: "main",
 		helpers: {
@@ -12,36 +14,10 @@ var express = require("express"),
 		}
 	}),
 	bodyParser = require("body-parser"),
+	cookieParser = require("cookie-parser"),
+	session = require('express-session'),
 	formidable = require("formidable"),
 	app = express();
-
-function getWeatherData() {
-	return {
-		locations: [
-			{
-				name: "Portland",
-				forecastUrl: "http://www.wunderground.com/US/OR/Portland.html",
-				iconUrl: "http://icons-ak.wxug.com/i/c/k/cloudy.gif",
-				weather: "Overcast",
-				temp: "54.1 F(12.3 C)"
-			},
-			{
-				name: "Bend",
-				forecastUrl: "http://www.wunderground.com/US/OR/Bend.html",
-				iconUrl: "http://icons-ak.wxug.com/i/c/k/cloudy.gif",
-				weather: "Partly Cloudy",
-				temp: "55.0 F(12.8 C)"
-			},
-			{
-				name: "Lagos",
-				forecastUrl: "http://www.wunderground.com/US/OR/Manzanita.html",
-				iconUrl: "http://icons-ak.wxug.com/i/c/k/rain.gif",
-				weather: "Light Rain",
-				temp: "55.0 F(12.8 C)"
-			}
-		]
-	};
-}
 
 //disable express' x-powered by:
 app.disable("x-powered");
@@ -53,6 +29,9 @@ app.set("port", process.env.PORT || 3000);
 app.locals.copyRightYear = new Date().getFullYear();
 app.use(express.static(path.resolve(path.join(__dirname + "/public"))));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser(credentials.cookieSecret));
+app.use(session());
+
 app.use(function(req, res, next) {
 	res.locals.showTests =
 		app.get("env") !== "production" && req.query.test === "1";
@@ -63,11 +42,19 @@ app.use(function(req, res, next) {
 	if (!res.locals.partials) {
 		res.locals.partials = {};
 	}
-	res.locals.partials.weatherData = getWeatherData();
+	res.locals.partials.weatherData = weatherData.getWeatherData();
 	next();
 });
 
+app.use(function(req, res, next) {
+	//if a flash message, add to the context and then delete it
+	res.locals.flash = req.session.flash;
+	delete req.session.flash;
+	next();
+})
+
 app.get("/", function(req, res) {
+	//res.cookie("coffee", "makesAlive", { signed: true });
 	res.render("home");
 });
 
